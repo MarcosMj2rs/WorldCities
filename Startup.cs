@@ -46,6 +46,7 @@ namespace WorldCities
 			app.UseHttpsRedirection();
 
 			//app.UseStaticFiles();
+			
 			app.UseStaticFiles(new StaticFileOptions()
 			{
 				OnPrepareResponse = (context) =>
