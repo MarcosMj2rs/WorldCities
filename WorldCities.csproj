@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\app\angular-material.module.ts" />
     <None Remove="ClientApp\src\app\cities\cities.component.ts" />
     <None Remove="ClientApp\src\app\cities\city.ts" />
   </ItemGroup>
@@ -42,6 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\angular-material.module.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\cities\cities.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\cities\city.ts" />
   </ItemGroup>
