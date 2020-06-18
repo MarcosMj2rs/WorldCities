@@ -2,7 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Reflection;
 using System.Threading.Tasks;
+
 
 namespace WorldCities.Data
 {
@@ -52,19 +55,31 @@ namespace WorldCities.Data
 				return ((PageIndex + 1) < TotalPages);
 			}
 		}
+
+		/// <summary>
+		/// Nome da coluna de classificação (ou nulo se nenhum estiver definido)
+		/// </summary>
+		public string SortColumn { get; set; }
+
+		/// <summary>
+		/// Ordem de classificação ("ASC", "DESC" ou nulo se nenhum estiver definido)
+		/// </summary>
+		public string SortOrder { get; set; }
 		#endregion
 
 		#region[[CONSTRUTOR]]
 		/// <summary>
 		/// Construtor privado chamado pelo método CreateAsync
 		/// </summary>
-		private ApiResult(List<T> data, int count, int pageIndex, int pageSize)
+		private ApiResult(List<T> data, int count, int pageIndex, int pageSize, string sortColumn, string sortOrder)
 		{
 			Data = data;
 			PageIndex = pageIndex;
 			PageSize = pageSize;
 			TotalCount = count;
 			TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+			SortColumn = sortColumn;
+			SortOrder = sortOrder;
 		}
 		#endregion
 
@@ -75,16 +90,42 @@ namespace WorldCities.Data
 		/// <param name="source"> Uma fonte IQueryable de tipo genérico</param>
 		/// <param name="pageIndex">Índice de página atual baseado em zero (0 = first page)</param>
 		/// <param name="pageSize">O Tamannha atual de cada pagina</param>
+		/// <param name="sortColumn">The sorting column name</param>
+		/// <param name="sortOrder">The sorting order ("ASC" or "DESC")</param>
 		/// <returns>Um objeto que contém o resultado paginado e todas as informações relevantes da navegação de paginação.</returns>
-		public static async Task<ApiResult<T>> CreateAsync(IQueryable<T> source, int pageIndex, int pageSize)
+		public static async Task<ApiResult<T>> CreateAsync(IQueryable<T> source, int pageIndex, int pageSize, string sortColumn = null, string sortOrder = null)
 		{
 			var count = await source.CountAsync();
-			source = source.Skip(pageIndex * pageSize)
-						   .Take(pageSize);
+
+			if(!string.IsNullOrEmpty(sortColumn) && IsValidProperty(sortColumn))
+			{
+				sortOrder = !string.IsNullOrEmpty(sortOrder) && string.Compare(sortOrder, "ASC", true) == 0 ? "ASC" : "DESC";
+
+				source = source.OrderBy(string.Format("{0} {1}", sortColumn, sortOrder));
+			}
+
+			source = source.Skip(pageIndex * pageSize).Take(pageSize);
 
 			var data = await source.ToListAsync();
 
-			return new ApiResult<T>(data, count, pageIndex, pageSize);
+			return new ApiResult<T>(data, count, pageIndex, pageSize, sortColumn, sortOrder);
+		}
+
+		/// Checks if the given property name exists
+		/// to protect against SQL injection attacks
+		/// </summary>
+		public static bool IsValidProperty(string propertyName, bool throwExceptionIfNotFound = true)
+		{
+			var prop = typeof(T).GetProperty(
+				propertyName,
+				BindingFlags.IgnoreCase |
+				BindingFlags.Public |
+				BindingFlags.Instance);
+
+			if(prop == null && throwExceptionIfNotFound)
+				throw new NotSupportedException(String.Format("ERROR: Propriedade '{0}' não existe.", propertyName));
+			
+			return prop != null;
 		}
 		#endregion
 	}
