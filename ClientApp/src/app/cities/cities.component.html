@@ -1,6 +1,11 @@
-<h1>Cities</h1>
-<p>Here's a list of cities: feel free to play with it.</p>
+<h1>Cidades</h1>
+<p>Aqui está uma lista de cidades: fique à vontade para brincar com ela.</p>
 <p *ngIf="!cities"><em>Loading...</em></p>
+
+<mat-form-field [hidden]="!cities">
+  <input matInput (keyup)="loadData($event.target.value)" placeholder="Filtrar por nome (ou parte dele)...">
+</mat-form-field>
+
 <table mat-table [dataSource]="cities" class="mat-elevation-z8" [hidden]="!cities"
        matSort (matSortChange)="loadData()"
        matSortActive="{{defaultSortColumn}}"

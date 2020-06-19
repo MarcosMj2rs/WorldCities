@@ -20,6 +20,10 @@ export class CitiesComponent {
   public defaultSortColumn: string = "name";
   public defaultSortOrder: string = "asc";
 
+  public filterQuery: string = null;
+  public filterColumn: string = null;
+  public defaultFilterColumn: string = "Name";
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -29,13 +33,16 @@ export class CitiesComponent {
   }
 
   ngOnInit() {
-    this.loadData();
+    this.loadData(null);
   }
 
-  loadData() {
+  loadData(query: string = null) {
     var pageEvent = new PageEvent();
     pageEvent.pageIndex = this.defaultPageIndex;
     pageEvent.pageSize = this.defaultPageSize;
+    if (query) {
+      this.filterQuery = query;
+    }
     this.getData(pageEvent);
   }
 
@@ -50,6 +57,13 @@ export class CitiesComponent {
       .set("sortOrder", (this.sort)
         ? this.sort.direction
         : this.defaultSortOrder);
+
+    if (this.filterQuery) {
+      params = params
+        .set("filterColumn", this.defaultFilterColumn)
+        .set("filterQuery", this.filterQuery);
+    }
+
     this.http.get<any>(url, { params })
       .subscribe(result => {
         console.log(result);
