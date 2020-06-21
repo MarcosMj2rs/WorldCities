@@ -25,8 +25,13 @@
               [routerLinkActiveOptions]="{ exact: true }">
             <a class="nav-link text-dark" [routerLink]="['/']">Home</a>
           </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
+          <li class="nav-item"
+            [routerLinkActive]="['link-active']">
             <a class="nav-link text-dark" [routerLink]="['/cities']">Cidades</a>
+          </li>
+          <li class="nav-item"
+              [routerLinkActive]="['link-active']">
+            <a class="nav-link text-dark" [routerLink]="['/countries']">Paises</a>
           </li>
         </ul>
       </div>

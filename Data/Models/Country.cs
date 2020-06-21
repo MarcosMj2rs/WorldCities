@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace WorldCities.Data.Models
@@ -28,11 +29,13 @@ namespace WorldCities.Data.Models
 		/// <summary>
 		/// Código do país (ISO 3166-1 formato ALPHA-2)
 		/// </summary>
+		[JsonPropertyName("iso2")]
 		public string ISO2 { get; set; }
 
 		/// <summary>
 		/// Código do país (ISO 3166-1 formato ALPHA-3)
 		/// </summary>
+		[JsonPropertyName("iso3")]
 		public string ISO3 { get; set; }
 		#endregion
 
