@@ -1,0 +1,26 @@
+<div class="city-edit">
+  <h1>{{title}}</h1>
+  <p *ngIf="!city"><em>Loading...</em></p>
+  <div class="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <!--<div class="form-group" [ngClass]="{ 'has-error has-feedback' : hasError('name') }">-->
+      <label for="name">Cidade:</label> <br />
+      <input type="text" id="name" formControlName="name" required placeholder="Nome da cidade..." class="form-control" />
+      <!--<span *ngIf="hasError('name')" class="glyphicon glyphicon-remove form-control- feedback" aria-hidden="true"></span> <div *ngIf="hasError('name')"   class="help-block">  Name is a required field: please insert a valid name. </div> -->
+    </div>
+    <div class="form-group">
+      <!--  <div class="form-group" [ngClass]="{ 'has-error has- feedback' : hasError('name') }"> -->
+      <label for="lat">Latitude:</label> <br />
+      <input type="text" id="lat" formControlName="lat" required placeholder="Latitude..." class="form-control" />
+      <!-- <span *ngIf="hasError('lat')" class="glyphicon glyphicon-remove form-control- feedback" aria-hidden="true"></span> <div *ngIf="hasError('lat')"   class="help-block">  Latitude is a required field: please insert a valid    latitude value. </div> -->
+    </div>
+    <div class="form-group">
+      <!--  <div class="form-group" [ngClass]="{ 'has-error has- feedback' : hasError('name') }"> -->
+      <label for="lon">Longitude:</label> <br />
+      <input type="text" id="lon" formControlName="lon" required placeholder="Longitude..." class="form-control" />
+      <!-- <span *ngIf="hasError('lon')" class="glyphicon glyphicon-remove form-control- feedback" aria-hidden="true"></span> <div *ngIf="hasError('lon')"   class="help-block">  Longitude is a required field: please insert a valid    longitude value. </div> -->
+    </div>
+    <div class="form-group commands"><button type="submit" (click)="onSubmit()" class="btn btn-success">Salvar</button>
+    <button type="submit" [routerLink]="['/cities']" class="btn btn-default">Cancelar</button></div>
+  </div>
+</div>
