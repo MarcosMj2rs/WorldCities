@@ -20,6 +20,18 @@
       <input type="text" id="lon" formControlName="lon" required placeholder="Longitude..." class="form-control" />
       <!-- <span *ngIf="hasError('lon')" class="glyphicon glyphicon-remove form-control- feedback" aria-hidden="true"></span> <div *ngIf="hasError('lon')"   class="help-block">  Longitude is a required field: please insert a valid    longitude value. </div> -->
     </div>
+    <div class="form-group" *ngIf="countries">
+      <label for="lon">País:</label>
+      <br />
+      <mat-form-field *ngIf="countries">
+        <mat-label>Selecione um país...</mat-label>
+        <mat-select id="countryId" formControlName="countryId">
+          <mat-option *ngFor="let country of countries" [value]="country.id">
+            {{country.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
     <div class="form-group commands">
       <button *ngIf="id" type="submit" (click)="onSubmit()" class="btn btn-success">Salvar</button>
       <button *ngIf="!id" type="submit" (click)="onSubmit()" class="btn btn-success">Criar</button>
