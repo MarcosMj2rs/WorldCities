@@ -1,0 +1,41 @@
+<div class="country-edit">
+  <h1>{{title}}</h1>
+  <p *ngIf="this.id && !country"><em>Loading...</em></p>
+  <div class="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="name">Nome do País:</label>
+      <br />
+      <input type="text" id="name" formControlName="name" required placeholder="Nome do país..." class="form-control" />
+      <div *ngIf="form.get('name').invalid && (form.get('name').dirty || form.get('name').touched)" class="invalid-feedback">
+        <div *ngIf="form.get('name').errors?.required"> Nome é obrigatório. </div>
+        <div *ngIf="form.get('name').errors?.isDupeField"> Nome existente: por favor, escolha outro. </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="iso2">ISO 3166-1 ALPHA-2 Código do país (2 letras)</label>
+      <br />
+      <input type="text" id="iso2" formControlName="iso2" required placeholder="Código do país (2 letras)..." class="form-control" />
+      <div *ngIf="form.get('iso2').invalid && (form.get('iso2').dirty || form.get('iso2').touched)" class="invalid-feedback">
+        <div *ngIf="form.get('iso2').errors?.required"> ISO 3166-1 ALPHA-2 Código do país é obrigatório. </div>
+        <div *ngIf="form.get('iso2').errors?.pattern"> ISO 3166-1 ALPHA-2 requer 2 letras. </div>
+        <div *ngIf="form.get('iso2').errors?.isDupeField"> Este ISO 3166-1 ALPHA-2 código do país ja existe: por favor, escolha outro. </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="iso3">ISO 3166-1 ALPHA-3 Código do país (3 letras)</label>
+      <br />
+      <input type="text" id="iso3" formControlName="iso3" required placeholder="Código do país com 3 letras..." class="form-control" />
+      <div *ngIf="form.get('iso3').invalid && (form.get('iso3').dirty || form.get('iso3').touched)" class="invalid-feedback">
+        <div *ngIf="form.get('iso3').errors?.required"> ISO 3166-1 ALPHA-3 Código do país é obrigatório. </div>
+        <div *ngIf="form.get('iso3').errors?.pattern"> ISO 3166-1 ALPHA-3 requer 3 letras. </div>
+        <div *ngIf="form.get('iso3').errors?.isDupeField"> Este ISO 3166-1 ALPHA-3 código do país ja existe: por favor escolha outro. </div>
+      </div>
+      <br />
+      <div class="form-group commands">
+        <button *ngIf="id" type="submit" (click)="onSubmit()" [disabled]="form.invalid" class="btn btn-success">Salvar</button>
+        <button *ngIf="!id" type="submit" (click)="onSubmit()" [disabled]="form.invalid" class="btn btn-success">Salvar</button>
+        <button type="submit" [routerLink]="['/countries']" class="btn btn-delfault">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>

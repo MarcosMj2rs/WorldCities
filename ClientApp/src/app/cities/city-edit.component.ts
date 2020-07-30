@@ -74,7 +74,7 @@ export class CityEditComponent {
   }
 
   loadCountries() {
-    // Recipera todos os países do servidor
+    // Recupera todos os países do servidor
     var url = this.baseUrl + "api/countries";
     var params = new HttpParams()
       .set("pageSize", "9999")
