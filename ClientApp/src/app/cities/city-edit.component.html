@@ -8,26 +8,23 @@
     </div>
 
     <div class="form-group">
-      <!--<div class="form-group" [ngClass]="{ 'has-error has-feedback' : hasError('name') }">-->
       <label for="name">Cidade:</label> <br />
       <input type="text" id="name" formControlName="name" required placeholder="Nome da cidade..." class="form-control" />
-      <div *ngIf="form.get('name').invalid && (form.get('name').dirty || form.get('name').touched)" class="invalid-feedback">
+      <div *ngIf="hasError('name')" class="invalid-feedback">
         <div *ngIf="form.get('name').errors?.required">Nome obrigatório</div>
       </div>
     </div>
     <div class="form-group">
-      <!--  <div class="form-group" [ngClass]="{ 'has-error has- feedback' : hasError('name') }"> -->
       <label for="lat">Latitude:</label> <br />
       <input type="text" id="lat" formControlName="lat" required placeholder="Latitude..." class="form-control" />
-      <div *ngIf="form.get('lat').invalid && (form.get('lat').dirty || form.get('lat').touched)" class="invalid-feedback">
+      <div *ngIf="hasError('lat')" class="invalid-feedback">
         <div *ngIf="form.get('lat').errors?.required">Latitude obrigatório</div>
       </div>
     </div>
     <div class="form-group">
-      <!--  <div class="form-group" [ngClass]="{ 'has-error has- feedback' : hasError('name') }"> -->
       <label for="lon">Longitude:</label> <br />
       <input type="text" id="lon" formControlName="lon" required placeholder="Longitude..." class="form-control" />
-      <div *ngIf="form.get('lon').invalid && (form.get('lon').dirty || form.get('lon').touched)" class="invalid-feedback">
+      <div *ngIf="hasError('lon')" class="invalid-feedback">
         <div *ngIf="form.get('lon').errors?.required">Longitude obrigatório</div>
       </div>
     </div>
