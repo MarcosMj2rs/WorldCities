@@ -18,14 +18,20 @@
       <label for="lat">Latitude:</label> <br />
       <input type="text" id="lat" formControlName="lat" required placeholder="Latitude..." class="form-control" />
       <div *ngIf="hasError('lat')" class="invalid-feedback">
-        <div *ngIf="form.get('lat').errors?.required">Latitude obrigatório</div>
+        <!--<div *ngIf="form.get('lat').errors?.required">Latitude obrigatório</div>-->
+      <div *ngIf="form.get('lat').errors?.pattern">
+        Latitude requer números positivos ou negativos com até 4 casas decimais
+      </div>
       </div>
     </div>
     <div class="form-group">
       <label for="lon">Longitude:</label> <br />
       <input type="text" id="lon" formControlName="lon" required placeholder="Longitude..." class="form-control" />
       <div *ngIf="hasError('lon')" class="invalid-feedback">
-        <div *ngIf="form.get('lon').errors?.required">Longitude obrigatório</div>
+        <!--<div *ngIf="form.get('lon').errors?.required">Longitude obrigatório</div>-->
+        <div *ngIf="form.get('lon').errors?.pattern">
+          Longitude requer números positivos ou negativos com até 4 casas decimais
+        </div>
       </div>
     </div>
     <div class="form-group" *ngIf="countries">
