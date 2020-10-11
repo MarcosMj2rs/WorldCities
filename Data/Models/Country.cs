@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -39,10 +40,28 @@ namespace WorldCities.Data.Models
 		public string ISO3 { get; set; }
 		#endregion
 
+		#region [[PROPRIEDADES DO LADO CLIENTE]]
+		/// <summary>
+		/// O Número de cidades relacionadas a um país
+		/// </summary>
+		[NotMapped]
+		public int TotCities
+		{
+			get
+			{
+				return (Cities != null) ? Cities.Count : _TotCities;
+			}
+			set { _TotCities = value; }
+		}
+
+		private int _TotCities = 0;
+		#endregion
+
 		#region[[NAVIGATION PROPERTIES]]
 		/// <summary>
 		/// Lista contendo todas as Cidades relacionadas com país
 		/// </summary>
+		[JsonIgnore]
 		public virtual List<City> Cities { get; set; }
 		#endregion
 	}
