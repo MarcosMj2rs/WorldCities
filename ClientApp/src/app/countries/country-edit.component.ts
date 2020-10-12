@@ -1,42 +1,42 @@
 import { Component, Inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+// import { HttpClient, HttpParams } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators, AbstractControl, AsyncValidatorFn } from '@angular/forms';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-
-import { Country } from './../countries/Country';
 import { BaseFormComponent } from '../base.form.component';
 
+import { Country } from '../countries/country';
+import { CountryService } from './country.service';
 
 @Component({
   selector: 'app-country-edit',
   templateUrl: './country-edit.component.html',
   styleUrls: ['./country-edit.component.css']
 })
-export class CountryEditComponent extends BaseFormComponent {
+export class CountryEditComponent
+  extends BaseFormComponent {
 
-  //titulo da View
+  // the view title
   title: string;
 
-  //a model do form
+  // the form model
   form: FormGroup;
 
-  //O objeto city para criação e edição
+  // the city object to edit or create
   country: Country;
 
-  //o Id do objeto city, disponibilizado para ativar a rota:
-  //Será NULL quando adicionarmos um novo país e NÃO será NULL quando editarmos um país existente
+  // the city object id, as fetched from the active route:
+  // It's NULL when we're adding a new country,
+  // and not NULL when we're editing an existing one.
   id?: number;
 
   constructor(
     private fb: FormBuilder,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private http: HttpClient,
-    @Inject('BASE_URL') private baseUrl: string) {
+    private countryService: CountryService) {
     super();
-    this.loadData();
   }
 
   ngOnInit() {
@@ -65,27 +65,31 @@ export class CountryEditComponent extends BaseFormComponent {
   }
 
   loadData() {
-    //recupera o ID do 'id'
+
+    // retrieve the ID from the 'id'
     this.id = +this.activatedRoute.snapshot.paramMap.get('id');
     if (this.id) {
-      // Modo edição, buscar cidade no servidor
-      var url = this.baseUrl + "api/countries/" + this.id;
+      // EDIT MODE
 
-      this.http.get<Country>(url).subscribe(result => {
-        this.country = result;
-        this.title = "Edição - " + this.country.name;
+      // fetch the country from the server
+      this.countryService.get<Country>(this.id)
+        .subscribe(result => {
+          this.country = result;
+          this.title = "Edit - " + this.country.name;
 
-        //atualização do form com os valores do país
-        this.form.patchValue(this.country);
-      }, error => console.error(error));
+          // update the form with the country value
+          this.form.patchValue(this.country);
+        }, error => console.error(error));
     }
     else {
-      //Adição de pais
-      this.title = "Criar um novo país";
+      // ADD NEW MODE
+
+      this.title = "Create a new Country";
     }
   }
 
   onSubmit() {
+
     var country = (this.id) ? this.country : <Country>{};
 
     country.name = this.form.get("name").value;
@@ -93,27 +97,26 @@ export class CountryEditComponent extends BaseFormComponent {
     country.iso3 = this.form.get("iso3").value;
 
     if (this.id) {
-      //Modulo Edição
-      var url = this.baseUrl + "api/countries/" + this.country.id;
-
-      this.http
-        .put<Country>(url, country)
+      // EDIT mode
+      this.countryService
+        .put<Country>(country)
         .subscribe(result => {
-          console.log("País " + country.name + "foi atualizado.");
 
-          //volta para view de paises
+          console.log("Country " + country.id + " has been updated.");
+
+          // go back to cities view
           this.router.navigate(['/countries']);
         }, error => console.log(error));
     }
     else {
-      //Módulo da adição
-      var url = this.baseUrl + "api/countries";
-      this.http
-        .post<Country>(url, country)
+      // ADD NEW mode
+      this.countryService
+        .post<Country>(country)
         .subscribe(result => {
-          console.log("País " + result.name + "foi criado");
 
-          //volta para view de paises
+          console.log("Country " + result.id + " has been created.");
+
+          // go back to cities view
           this.router.navigate(['/countries']);
         }, error => console.log(error));
     }
@@ -121,13 +124,13 @@ export class CountryEditComponent extends BaseFormComponent {
 
   isDupeField(fieldName: string): AsyncValidatorFn {
     return (control: AbstractControl): Observable<{ [key: string]: any } | null> => {
-      var params = new HttpParams()
-        .set("countryId", (this.id) ? this.id.toString() : "0")
-        .set("fieldName", fieldName)
-        .set("fieldValue", control.value);
 
-      var url = this.baseUrl + "api/countries/isDupeField";
-      return this.http.post<boolean>(url, null, { params })
+      var countryId = (this.id) ? this.id.toString() : "0";
+
+      return this.countryService.isDupeField(
+        countryId,
+        fieldName,
+        control.value)
         .pipe(map(result => {
           return (result ? { isDupeField: true } : null);
         }));

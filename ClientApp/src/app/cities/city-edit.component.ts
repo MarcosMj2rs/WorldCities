@@ -1,42 +1,45 @@
 import { Component, Inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+// import { HttpClient, HttpParams } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, AbstractControl, AsyncValidatorFn } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-
-import { City } from './City';
-import { Country } from './../countries/Country';
 import { BaseFormComponent } from '../base.form.component';
+
+import { City } from './city';
+import { Country } from '../countries/country';
+import { CityService } from './city.service';
+import { ApiResult } from '../base.service';
 
 @Component({
   selector: 'app-city-edit',
   templateUrl: './city-edit.component.html',
   styleUrls: ['./city-edit.component.css']
 })
-export class CityEditComponent extends BaseFormComponent {
-  // título da view
+export class CityEditComponent
+  extends BaseFormComponent {
+
+  // the view title
   title: string;
 
-  // o modelo do formulário
+  // the form model
   form: FormGroup;
 
-  // objeto City para edição ou criação
+  // the city object to edit or create
   city: City;
 
-  // o ID do objeto da city, tera o comportamento na rota ativa:
-  // É NULL quando adicionamos uma nova cidade,
-  // e NÃO NULL quando estamos editando uma existente.
+  // the city object id, as fetched from the active route:
+  // It's NULL when we're adding a new city,
+  // and not NULL when we're editing an existing one.
   id?: number;
 
-  // Um array de paises para selecção
+  // the countries array for the select
   countries: Country[];
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private http: HttpClient,
-    @Inject('BASE_URL') private baseUrl: string) {
+    private cityService: CityService) {
     super();
   }
 
@@ -58,37 +61,41 @@ export class CityEditComponent extends BaseFormComponent {
   }
 
   loadData() {
-    // Carregar países
+
+    // load countries
     this.loadCountries();
 
-    // recupera o ID a partir do parametro id
+    // retrieve the ID from the 'id'
     this.id = +this.activatedRoute.snapshot.paramMap.get('id');
-
     if (this.id) {
-      // Modo edição, buscar cidade no servidor
-      var url = this.baseUrl + "api/cities/" + this.id;
-      this.http.get<City>(url).subscribe(result => {
-        this.city = result;
-        this.title = "Edição - " + this.city.name;
+      // EDIT MODE
 
-        // atualizar o form com o valor da cidade
+      // fetch the city from the server
+      this.cityService.get<City>(this.id).subscribe(result => {
+        this.city = result;
+        this.title = "Edit - " + this.city.name;
+
+        // update the form with the city value
         this.form.patchValue(this.city);
       }, error => console.error(error));
     }
     else {
-      // Modo Adição
-      this.title = "Criar nova Cidade";
+      // ADD NEW MODE
+
+      this.title = "Create a new City";
     }
   }
 
   loadCountries() {
-    // Recupera todos os países do servidor
-    var url = this.baseUrl + "api/countries";
-    var params = new HttpParams()
-      .set("pageSize", "9999")
-      .set("sortColumn", "name");
-
-    this.http.get<any>(url, { params }).subscribe(result => {
+    // fetch all the countries from the server
+    this.cityService.getCountries<ApiResult<Country>>(
+      0,
+      9999,
+      "name",
+      null,
+      null,
+      null,
+    ).subscribe(result => {
       this.countries = result.data;
     }, error => console.error(error));
   }
@@ -103,28 +110,26 @@ export class CityEditComponent extends BaseFormComponent {
     city.countryId = +this.form.get("countryId").value;
 
     if (this.id) {
-      // EDIÇÃO
-      var url = this.baseUrl + "api/cities/" + this.city.id;
-      this.http
-        .put<City>(url, city)
+      // EDIT mode
+      this.cityService
+        .put<City>(city)
         .subscribe(result => {
 
-          console.log("City " + city.id + " foi atualizado.");
+          console.log("City " + city.id + " has been updated.");
 
-          // voltar para view Cidades
+          // go back to cities view
           this.router.navigate(['/cities']);
         }, error => console.log(error));
     }
     else {
-      // ADIÇÃO
-      var url = this.baseUrl + "api/cities";
-      this.http
-        .post<City>(url, city)
+      // ADD NEW mode
+      this.cityService
+        .post<City>(city)
         .subscribe(result => {
 
-          console.log("Cidade " + result.id + " foi criada.");
+          console.log("City " + result.id + " has been created.");
 
-          // voltar para view Cidades
+          // go back to cities view
           this.router.navigate(['/cities']);
         }, error => console.log(error));
     }
@@ -132,7 +137,6 @@ export class CityEditComponent extends BaseFormComponent {
 
   isDupeCity(): AsyncValidatorFn {
     return (control: AbstractControl): Observable<{ [key: string]: any } | null> => {
-
       var city = <City>{};
       city.id = (this.id) ? this.id : 0;
       city.name = this.form.get("name").value;
@@ -140,10 +144,11 @@ export class CityEditComponent extends BaseFormComponent {
       city.lon = +this.form.get("lon").value;
       city.countryId = +this.form.get("countryId").value;
 
-      var url = this.baseUrl + "api/cities/IsDupeCity";
-      return this.http.post<boolean>(url, city).pipe(map(result => {
-        return (result ? { isDupeCity: true } : null);
-      }));
+      return this.cityService.isDupeCity(city)
+        .pipe(map(result => {
+          return (result ? { isDupeCity: true } : null);
+        }));
     }
   }
 }
+
