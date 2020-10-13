@@ -36,6 +36,9 @@ export class CityEditComponent
   // the countries array for the select
   countries: Country[];
 
+  // Activity Log (for debugging purposes)
+  activityLog: string = '';
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
@@ -57,7 +60,35 @@ export class CityEditComponent
       countryId: new FormControl('', Validators.required)
     }, null, this.isDupeCity());
 
+    //reagindo a mudanças no form
+    this.form.valueChanges
+      .subscribe(val => {
+        if (!this.form.dirty) {
+          this.log("O model do form não foi carregado");
+        }
+        else {
+          this.log("Form foi atualizado pelo usuário");
+        }
+      });
+
+    // reage a mudanças no controle form.name
+    this.form.get("name")!.valueChanges
+      .subscribe(val => {
+        if (!this.form.dirty) {
+          this.log("O nome foi carregado com os valores iniciais.");
+        }
+        else {
+          this.log("O nome foi atualizado pelo usuário.");
+        }
+      });
+
     this.loadData();
+  }
+
+  log(str: string) {
+    this.activityLog += "["
+      + new Date().toLocaleString()
+      + "] " + str + "<br />";
   }
 
   loadData() {

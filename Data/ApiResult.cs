@@ -111,7 +111,7 @@ namespace WorldCities.Data
 		{
 			if(!string.IsNullOrEmpty(filterColumn) && !string.IsNullOrEmpty(filterQuery) && IsValidProperty(filterColumn))
 				source = source.Where(string.Format("{0}.Contains(@0)", filterColumn), filterQuery);
-				
+
 			var count = await source.CountAsync();
 
 			if(!string.IsNullOrEmpty(sortColumn) && IsValidProperty(sortColumn))
@@ -122,6 +122,13 @@ namespace WorldCities.Data
 			}
 
 			source = source.Skip(pageIndex * pageSize).Take(pageSize);
+
+#if DEBUG
+			{
+				//Recuperar a query SQL (para objetivo de debug)
+				var sql = source.ToSql();
+			}
+#endif
 
 			var data = await source.ToListAsync();
 
@@ -141,9 +148,9 @@ namespace WorldCities.Data
 
 			if(prop == null && throwExceptionIfNotFound)
 				throw new NotSupportedException(String.Format("ERROR: Propriedade '{0}' não existe.", propertyName));
-			
+
 			return prop != null;
 		}
-		#endregion
+#endregion
 	}
 }

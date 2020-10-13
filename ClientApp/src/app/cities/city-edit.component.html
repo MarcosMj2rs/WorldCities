@@ -19,9 +19,9 @@
       <input type="text" id="lat" formControlName="lat" required placeholder="Latitude..." class="form-control" />
       <div *ngIf="hasError('lat')" class="invalid-feedback">
         <!--<div *ngIf="form.get('lat').errors?.required">Latitude obrigatório</div>-->
-      <div *ngIf="form.get('lat').errors?.pattern">
-        Latitude requer números positivos ou negativos com até 4 casas decimais
-      </div>
+        <div *ngIf="form.get('lat').errors?.pattern">
+          Latitude requer números positivos ou negativos com até 4 casas decimais
+        </div>
       </div>
     </div>
     <div class="form-group">
@@ -56,5 +56,36 @@
       <button *ngIf="!id" type="submit" (click)="onSubmit()" [disabled]="form.invalid" class="btn btn-success">Criar</button>
       <button type="submit" [routerLink]="['/cities']" class="btn btn-default">Cancelar</button>
     </div>
+
+    Form debug info panel
+    <div class="card bg-light mb-3">
+      <div class="card-header">Form Debug Info</div>
+      <div class="card-body">
+        <div class="card-text">
+          <div><strong>Form value:</strong></div>
+          <div class="help-block">
+            {{ form.value | json }}
+          </div>
+          <div class="mt-2"><strong>Form status:</strong></div>
+          <div class="help-block">
+            {{ form.status | json }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form activity log panel -->
+    <div class="card bg-light mb-3">
+      <div class="card-header">Form Activity Log</div>
+      <div class="card-body">
+        <div class="card-text">
+          <div class="help-block">
+            <span *ngIf="activityLog" [innerHTML]="activityLog">
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
